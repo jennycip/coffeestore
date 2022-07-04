@@ -12,21 +12,23 @@ import { fetchCooffeeStores } from '../../lib/coffee-store';
 export async function getStaticProps(staticProps) {
     const coffeeStores = await fetchCooffeeStores();
     const params = staticProps.params;
+    const findCoffeStoreById = coffeeStores.find(coffeeStore => {
+        return coffeeStore.id.toString() === params.id;
+        });
     return {
         props: {
-            coffeeStores: coffeeStores.find(coffeeStore => {
-                return coffeeStore.id.toString() === params.id;
-            })
-        }, // will be passed to the page component as props
+            coffeeStores: findCoffeStoreById ? findCoffeStoreById : {},
+            },
+        }; // will be passed to the page component as props
     }
-}
+
 
 export async function getStaticPaths() {
     const coffeeStores = await fetchCooffeeStores();
     const paths = coffeeStores.map((post) => ({
         params: { id: post.id.toString() },
     }))
-    return { paths, fallback: false }
+    return { paths, fallback: true };
 }
 
 
@@ -63,7 +65,7 @@ const CoffeeStore = (props) => {
                         </div>
 
                         <Image
-                            src={imgUrl}
+                            src='https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
                             width={600}
                             height={360}
                             className={styles.storeImg}
